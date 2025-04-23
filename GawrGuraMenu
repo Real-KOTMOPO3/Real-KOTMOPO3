@@ -1,0 +1,213 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- Создаём GUI меню
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+
+local MainFrame = Instance.new("ImageLabel")
+MainFrame.Size = UDim2.new(0, 250, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -130)
+MainFrame.Image = "rbxassetid://118184980762595"
+MainFrame.BackgroundTransparency = 1
+MainFrame.Parent = ScreenGui
+MainFrame.Visible = false
+
+-- Скруглённые углы для менюшки
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 20)
+FrameCorner.Parent = MainFrame
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 100, 0, 40)
+ToggleButton.Position = UDim2.new(0, 75, 0, 10)
+ToggleButton.Text = "Aimbot: OFF"
+ToggleButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Parent = MainFrame
+
+local IgnoreFriendsButton = Instance.new("TextButton")
+IgnoreFriendsButton.Size = UDim2.new(0, 200, 0, 40)
+IgnoreFriendsButton.Position = UDim2.new(0, 25, 0, 60)
+IgnoreFriendsButton.Text = "Игнорировать друзей: ВЫКЛ"
+IgnoreFriendsButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+IgnoreFriendsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+IgnoreFriendsButton.Parent = MainFrame
+
+-- Ярлык "Коррекция"
+local CorrectionLabel = Instance.new("TextLabel")
+CorrectionLabel.Size = UDim2.new(0, 200, 0, 30)
+CorrectionLabel.Position = UDim2.new(0, 25, 0, 110)
+CorrectionLabel.Text = "Коррекция: 0"
+CorrectionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CorrectionLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+CorrectionLabel.BackgroundTransparency = 0.2
+CorrectionLabel.TextScaled = true
+CorrectionLabel.Parent = MainFrame
+
+local LabelCorner = Instance.new("UICorner")
+LabelCorner.CornerRadius = UDim.new(0, 10)
+LabelCorner.Parent = CorrectionLabel
+
+-- Поле для коррекции
+local CorrectionSlider = Instance.new("TextBox")
+CorrectionSlider.Size = UDim2.new(0, 200, 0, 40)
+CorrectionSlider.Position = UDim2.new(0, 25, 0, 150)
+CorrectionSlider.Text = "0"
+CorrectionSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+CorrectionSlider.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+CorrectionSlider.TextStrokeTransparency = 0.2
+CorrectionSlider.TextStrokeColor3 = Color3.fromRGB(30, 60, 90)
+CorrectionSlider.TextXAlignment = Enum.TextXAlignment.Center
+CorrectionSlider.TextYAlignment = Enum.TextYAlignment.Center
+CorrectionSlider.ClearTextOnFocus = false
+CorrectionSlider.TextScaled = true
+CorrectionSlider.Parent = MainFrame
+
+local SliderCorner = Instance.new("UICorner")
+SliderCorner.CornerRadius = UDim.new(0, 10)
+SliderCorner.Parent = CorrectionSlider
+
+-- Кнопка "Закрыть"
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 100, 0, 30)
+CloseButton.Position = UDim2.new(0, 75, 0, 200)
+CloseButton.Text = "Закрыть"
+CloseButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextScaled = true
+CloseButton.Parent = MainFrame
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 10)
+CloseCorner.Parent = CloseButton
+
+local CorrectionSlider = Instance.new("TextBox")
+CorrectionSlider.Size = UDim2.new(0, 200, 0, 40)
+CorrectionSlider.Position = UDim2.new(0, 25, 0, 150)
+CorrectionSlider.Text = "0"
+CorrectionSlider.TextColor3 = Color3.fromRGB(0, 0, 0)
+CorrectionSlider.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+CorrectionSlider.Parent = MainFrame
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 100, 0, 30)
+CloseButton.Position = UDim2.new(0, 75, 0, 200)
+CloseButton.Text = "Закрыть"
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 69, 0)
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Parent = MainFrame
+
+-- Текст внизу "Gawr Gura Menu"
+local MenuLabel = Instance.new("TextLabel")
+MenuLabel.Size = UDim2.new(1, 0, 0, 30)
+MenuLabel.Position = UDim2.new(0, 0, 1, -30)
+MenuLabel.Text = "Gawr Gura Menu"
+MenuLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+MenuLabel.BackgroundTransparency = 1
+MenuLabel.TextScaled = true
+MenuLabel.Font = Enum.Font.SourceSansBold
+MenuLabel.Parent = MainFrame
+
+-- Голубая обводка текста
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Thickness = 1.5
+UIStroke.Color = Color3.fromRGB(70, 130, 180)
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+UIStroke.Parent = MenuLabel
+
+local AimbotEnabled = false
+local IgnoreFriends = false
+local BaseCorrection = 0
+
+-- Функция поиска цели с учётом игнорирования друзей
+local function GetBestTarget()
+    local bestTarget = nil
+    local shortestDistance = math.huge
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local head = player.Character.Head
+            local distance = (head.Position - Camera.CFrame.Position).magnitude
+            local screenPosition, onScreen = Camera:WorldToViewportPoint(head.Position)
+
+            -- Проверка на друзей
+            local isFriend = LocalPlayer:IsFriendsWith(player.UserId)
+            if IgnoreFriends and isFriend then
+                continue
+            end
+
+            -- Проверка видимости и приоритет ближайшего игрока
+            if onScreen and distance < shortestDistance then
+                local velocity = player.Character.PrimaryPart.Velocity * 0.1
+                local predictedPosition = head.Position + velocity
+
+                bestTarget = {player = player, position = predictedPosition, distance = distance}
+                shortestDistance = distance
+            end
+        end
+    end
+
+    return bestTarget
+end
+
+-- Функция наведения на цель
+RunService.RenderStepped:Connect(function()
+    if AimbotEnabled then
+        local targetData = GetBestTarget()
+        if targetData then
+            local targetPosition = targetData.position
+            local distance = targetData.distance
+            local heightCorrection = BaseCorrection * (distance / 50)
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPosition - Vector3.new(0, heightCorrection, 0))
+        end
+    end
+end)
+
+-- Включение/выключение Aimbot
+ToggleButton.MouseButton1Click:Connect(function()
+    AimbotEnabled = not AimbotEnabled
+    ToggleButton.Text = "Aimbot: " .. (AimbotEnabled and "ON" or "OFF")
+end)
+
+-- Включение/выключение игнорирования друзей
+IgnoreFriendsButton.MouseButton1Click:Connect(function()
+    IgnoreFriends = not IgnoreFriends
+    IgnoreFriendsButton.Text = "Игнорировать друзей: " .. (IgnoreFriends and "ВКЛ" or "ВЫКЛ")
+end)
+
+-- Изменение коррекции высоты
+CorrectionSlider.FocusLost:Connect(function()
+    local newValue = tonumber(CorrectionSlider.Text)
+    if newValue then
+        BaseCorrection = newValue
+        CorrectionLabel.Text = "Коррекция: " .. newValue
+    else
+        CorrectionSlider.Text = tostring(BaseCorrection)
+    end
+end)
+
+-- Закрытие меню
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+-- Кнопка для открытия меню (изображение с круглыми углами)
+local OpenMenuButton = Instance.new("ImageButton")
+OpenMenuButton.Size = UDim2.new(0, 100, 0, 100)
+OpenMenuButton.Position = UDim2.new(0, 10, 0, 10)
+OpenMenuButton.Image = "rbxassetid://84923457357901"
+OpenMenuButton.BackgroundTransparency = 1
+OpenMenuButton.Parent = ScreenGui
+
+-- Скруглённые углы
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 20)
+UICorner.Parent = OpenMenuButton
+
+OpenMenuButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
