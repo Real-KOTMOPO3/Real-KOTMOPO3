@@ -37,6 +37,29 @@ IgnoreFriendsButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 IgnoreFriendsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 IgnoreFriendsButton.Parent = MainFrame
 
+local VisibilityCheck = false
+local VisibilityButton = Instance.new("TextButton")
+VisibilityButton.Size = UDim2.new(0, 200, 0, 40)
+VisibilityButton.Position = UDim2.new(0, 25, 0, 110)
+VisibilityButton.Text = "Проверка на видимость: ВЫКЛ"
+VisibilityButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+VisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+VisibilityButton.Parent = MainFrame
+
+VisibilityButton.MouseButton1Click:Connect(function()
+    VisibilityCheck = not VisibilityCheck
+    VisibilityButton.Text = "Проверка на видимость: " .. (VisibilityCheck and "ВКЛ" or "ВЫКЛ")
+
+    -- Показывает/скрывает системный текст
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Gawr Gura Menu",
+        Text = VisibilityCheck and "Проверка на видимость ON\nВы не можете целиться сквозь стены"
+                                or "Проверка на видимость OFF\nВы можете целиться сквозь стены",
+        Icon = "rbxassetid://ТВОЙ_АЙДИ_КАРТИНКИ", -- вставишь позже
+        Duration = 5
+    })
+end)
+
 -- Ярлык "Коррекция"
 local CorrectionLabel = Instance.new("TextLabel")
 CorrectionLabel.Size = UDim2.new(0, 200, 0, 30)
@@ -67,7 +90,27 @@ CorrectionSlider.ClearTextOnFocus = false
 CorrectionSlider.TextScaled = true
 CorrectionSlider.Parent = MainFrame
 
-local SliderCorner = Instance.new("UICorner")
+local AimbotRadius = 100
+local RadiusLabel = Instance.new("TextLabel")
+RadiusLabel.Size = UDim2.new(0, 200, 0, 30)
+RadiusLabel.Position = UDim2.new(0, 25, 0, 200)
+RadiusLabel.Text = "Радиус Aim: 100"
+RadiusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+RadiusLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+RadiusLabel.BackgroundTransparency = 0.2
+RadiusLabel.TextScaled = true
+RadiusLabel.Parent = MainFrame
+
+local RadiusBox = Instance.new("TextBox")
+RadiusBox.Size = UDim2.new(0, 200, 0, 40)
+RadiusBox.Position = UDim2.new(0, 25, 0, 240)
+RadiusBox.Text = "100"
+RadiusBox.TextScaled = true
+RadiusBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+RadiusBox.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+RadiusBox.ClearTextOnFocus = false
+
+local SliderCorner = Instaence.new("UICorner")
 SliderCorner.CornerRadius = UDim.new(0, 10)
 SliderCorner.Parent = CorrectionSlider
 
@@ -122,6 +165,9 @@ UIStroke.Parent = MenuLabel
 local AimbotEnabled = false
 local IgnoreFriends = false
 local BaseCorrection = 0
+local WallCheck = true
+local AimbotRadius = 100
+local ESPEnabled = false
 
 -- Функция поиска цели с учётом игнорирования друзей
 local function GetBestTarget()
@@ -141,12 +187,25 @@ local function GetBestTarget()
             end
 
             -- Проверка видимости и приоритет ближайшего игрока
-            if onScreen and distance < shortestDistance then
+            if onScreen and distance < shortestDistance and distance <= AimbotRadius then
                 local velocity = player.Character.PrimaryPart.Velocity * 0.1
                 local predictedPosition = head.Position + velocity
 
                 bestTarget = {player = player, position = predictedPosition, distance = distance}
                 shortestDistance = distance
+
+                if VisibilityCheck then
+    local rayOrigin = Camera.CFrame.Position
+    local rayDirection = (head.Position - rayOrigin).Unit * 1000
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+    
+    if raycastResult and raycastResult.Instance:IsDescendantOf(player.Character) == false then
+        continue
+    end
+end
             end
         end
     end
