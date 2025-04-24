@@ -157,6 +157,24 @@ CloseButton.TextScaled = true
 CloseButton.Parent = MainFrame
 stylizeButton(CloseButton)
 
+-- Надпись с версией
+local VersionLabel = Instance.new("TextLabel")
+VersionLabel.Size = UDim2.new(0, 100, 0, 25)
+VersionLabel.Position = UDim2.new(1, -110, 1, -30) -- правая нижняя часть MainFrame
+VersionLabel.AnchorPoint = Vector2.new(0, 0)
+VersionLabel.BackgroundTransparency = 1
+VersionLabel.Text = "1.25v🔱"
+VersionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+VersionLabel.Font = Enum.Font.SourceSansBold
+VersionLabel.TextScaled = true
+VersionLabel.Parent = MainFrame
+
+local versionStroke = Instance.new("UIStroke")
+versionStroke.Thickness = 1.2
+versionStroke.Color = Color3.fromRGB(70, 130, 180)
+versionStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+versionStroke.Parent = VersionLabel
+
 -- Обработчики кнопок
 local AimbotEnabled = false
 local IgnoreFriends = false
