@@ -9,8 +9,8 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.CoreGui
 
 local MainFrame = Instance.new("ImageLabel")
-MainFrame.Size = UDim2.new(0, 250, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -125, 0.5, -130)
+MainFrame.Size = UDim2.new(0, 300, 0, 370)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -185)
 MainFrame.Image = "rbxassetid://118184980762595"
 MainFrame.BackgroundTransparency = 1
 MainFrame.Parent = ScreenGui
@@ -52,7 +52,7 @@ local AimbotRadius = 100
 
 local RadiusLabel = Instance.new("TextLabel")
 RadiusLabel.Size = UDim2.new(0, 200, 0, 30)
-RadiusLabel.Position = UDim2.new(0, 25, 0, 240)
+RadiusLabel.Position = UDim2.new(0.5, 0, 1, -60)
 RadiusLabel.Text = "Радиус Aimbot: 100"
 RadiusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 RadiusLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -62,7 +62,7 @@ RadiusLabel.Parent = MainFrame
 
 local RadiusBox = Instance.new("TextBox")
 RadiusBox.Size = UDim2.new(0, 200, 0, 30)
-RadiusBox.Position = UDim2.new(0, 25, 0, 275)
+RadiusBox.Position = UDim2.new(0.5, 0, 1, -30)
 RadiusBox.Text = tostring(AimbotRadius)
 RadiusBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 RadiusBox.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
@@ -160,7 +160,7 @@ CloseButton.Parent = MainFrame
 -- Текст внизу "Gawr Gura Menu"
 local MenuLabel = Instance.new("TextLabel")
 MenuLabel.Size = UDim2.new(1, 0, 0, 30)
-MenuLabel.Position = UDim2.new(0, 0, 1, -30)
+MenuLabel.Position = UDim2.new(0.5, 0, 0, 10)
 MenuLabel.Text = "Gawr Gura Menu"
 MenuLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 MenuLabel.BackgroundTransparency = 1
@@ -253,8 +253,8 @@ end)
 
 -- Кнопка для открытия меню (изображение с круглыми углами)
 local OpenMenuButton = Instance.new("ImageButton")
-OpenMenuButton.Size = UDim2.new(0, 100, 0, 100)
-OpenMenuButton.Position = UDim2.new(0, 10, 0, 10)
+OpenMenuButton.Size = UDim2.new(0, 80, 0, 80)
+OpenMenuButton.Position = UDim2.new(0, 20, 0.5, -40)
 OpenMenuButton.Image = "rbxassetid://84923457357901"
 OpenMenuButton.BackgroundTransparency = 1
 OpenMenuButton.Parent = ScreenGui
@@ -266,4 +266,44 @@ UICorner.Parent = OpenMenuButton
 
 OpenMenuButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Перетаскивание кнопки открытия меню
+local dragging = false
+local dragInput, dragStart, startPos
+
+local function updateInput(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		local delta = input.Position - dragStart
+		OpenMenuButton.Position = UDim2.new(
+			0, startPos.X.Offset + delta.X,
+			0, startPos.Y.Offset + delta.Y
+		)
+	end
+end
+
+OpenMenuButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = OpenMenuButton.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+OpenMenuButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		updateInput(input)
+	end
 end)
