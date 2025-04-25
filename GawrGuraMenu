@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+local TweenService = game:GetService("TweenService")
 
 local function stylizeButton(button)
     button.Font = Enum.Font.SourceSansBold
@@ -163,7 +164,7 @@ VersionLabel.Size = UDim2.new(0, 100, 0, 25)
 VersionLabel.Position = UDim2.new(1, -110, 1, -30) -- правая нижняя часть MainFrame
 VersionLabel.AnchorPoint = Vector2.new(0, 0)
 VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = "1.25v🔱"
+VersionLabel.Text = "1.30v🔱"
 VersionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 VersionLabel.Font = Enum.Font.SourceSansBold
 VersionLabel.TextScaled = true
@@ -268,8 +269,26 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 20)
 UICorner.Parent = OpenMenuButton
 
+local isMenuOpen = false
+
 OpenMenuButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
+    if not isMenuOpen then
+        MainFrame.Visible = true
+        MainFrame.Position = UDim2.new(0.5, -250, 0.5, -500) -- начальная внеэкраная позиция
+        local tweenIn = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -250, 0.5, -210)
+        })
+        tweenIn:Play()
+    else
+        local tweenOut = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Position = UDim2.new(0.5, -250, 0.5, -500)
+        })
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            MainFrame.Visible = false
+        end)
+    end
+    isMenuOpen = not isMenuOpen
 end)
 
 -- Перетаскивание кнопки
