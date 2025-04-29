@@ -164,7 +164,7 @@ VersionLabel.Size = UDim2.new(0, 100, 0, 25)
 VersionLabel.Position = UDim2.new(1, -110, 1, -30) -- правая нижняя часть MainFrame
 VersionLabel.AnchorPoint = Vector2.new(0, 0)
 VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = "1.30v🔱"
+VersionLabel.Text = "1.31v🔱"
 VersionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 VersionLabel.Font = Enum.Font.SourceSansBold
 VersionLabel.TextScaled = true
@@ -227,6 +227,22 @@ CloseButton.MouseButton1Click:Connect(function()
 end)
 
 -- Цель
+local function IsVisible(targetPosition)
+    local origin = Camera.CFrame.Position
+    local direction = (targetPosition - origin).Unit * 1000
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+
+    local result = workspace:Raycast(origin, direction, raycastParams)
+    if result then
+        local hitPart = result.Instance
+        local hitPlayer = Players:GetPlayerFromCharacter(hitPart:FindFirstAncestorOfClass("Model"))
+        return hitPlayer ~= nil
+    end
+    return false
+end
+
 local function GetBestTarget()
     local bestTarget = nil
     local shortestDistance = math.huge
@@ -237,10 +253,12 @@ local function GetBestTarget()
             local distance = (head.Position - Camera.CFrame.Position).magnitude
             local screenPosition, onScreen = Camera:WorldToViewportPoint(head.Position)
             if onScreen and distance < shortestDistance and distance <= AimbotRadius then
-                local velocity = player.Character.PrimaryPart.Velocity * 0.1
-                local predictedPosition = head.Position + velocity
-                bestTarget = {position = predictedPosition, distance = distance}
-                shortestDistance = distance
+                if not VisibilityCheckEnabled or IsVisible(head.Position) then
+                    local velocity = player.Character.PrimaryPart.Velocity * 0.1
+                    local predictedPosition = head.Position + velocity
+                    bestTarget = {position = predictedPosition, distance = distance}
+                    shortestDistance = distance
+                end
             end
         end
     end
