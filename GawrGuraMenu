@@ -164,7 +164,7 @@ VersionLabel.Size = UDim2.new(0, 100, 0, 25)
 VersionLabel.Position = UDim2.new(1, -110, 1, -30) -- правая нижняя часть MainFrame
 VersionLabel.AnchorPoint = Vector2.new(0, 0)
 VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = "1.31v🔱"
+VersionLabel.Text = "1.31.1v🔱"
 VersionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 VersionLabel.Font = Enum.Font.SourceSansBold
 VersionLabel.TextScaled = true
@@ -229,18 +229,27 @@ end)
 -- Цель
 local function IsVisible(targetPosition)
     local origin = Camera.CFrame.Position
-    local direction = (targetPosition - origin).Unit * 1000
+    local direction = (targetPosition - origin).Unit * 1000  -- Направление луча
     local raycastParams = RaycastParams.new()
+
+    -- Игнорируем все объекты, которые не связаны с целью
     raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}  -- Игнорируем собственное тело
+
+    -- Теперь добавляем фильтрацию для потенциальных преград (невидимые части, прозрачные объекты и т.д.)
+    -- Если объект имеет прозрачность более 0.5, можно его игнорировать.
+    raycastParams.IgnoreWater = true  -- Игнорировать воду
 
     local result = workspace:Raycast(origin, direction, raycastParams)
     if result then
         local hitPart = result.Instance
+        -- Проверка, что попадание в части персонажа другого игрока
         local hitPlayer = Players:GetPlayerFromCharacter(hitPart:FindFirstAncestorOfClass("Model"))
-        return hitPlayer ~= nil
+        if hitPlayer then
+            return true  -- Видимость подтверждена
+        end
     end
-    return false
+    return false  -- Если нет попадания в игрока
 end
 
 local function GetBestTarget()
